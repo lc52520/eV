@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>eV</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		<style>
+			body {
+				color: #cccccc;
+				font-family:Monospace;
+				font-size:13px;
+				text-align:center;
+
+				background-color: #050505;
+				margin: 0px;
+				overflow: hidden;
+			}
+
+			#info {
+				position: absolute;
+				top: 0px; width: 100%;
+				padding: 5px;
+			}
+
+			a {
+				color: #0080ff;
+			}
+
+			.dg.ac {
+				z-index: 1 !important; /* FIX DAT.GUI */
+			}
+
+		</style>
+	</head>
+	<body>
+		<div id="container"></div>
+        <!-- Lightning strike example includes -->
+		<script src="../node_modules/three/build/three.js"></script>
+		<script src="../node_modules/three/examples/js/WebGL.js"></script>
+		<script src="../node_modules/three/examples/js/libs/stats.min.js"></script>
+		<script src='../node_modules/three/examples/js/libs/dat.gui.min.js'></script>
+		<script src="../node_modules/three/examples/js/controls/OrbitControls.js"></script>
+		<script src="../node_modules/three/examples/js/geometries/LightningStrike.js"></script>
+		<script src="../node_modules/three/examples/js/objects/LightningStorm.js"></script>
+		<script src="../node_modules/three/examples/js/SimplexNoise.js"></script>
+		<script src="../node_modules/three/examples/js/shaders/CopyShader.js"></script>
+		<script src="../node_modules/three/examples/js/postprocessing/EffectComposer.js"></script>
+		<script src="../node_modules/three/examples/js/postprocessing/RenderPass.js"></script>
+		<script src="../node_modules/three/examples/js/postprocessing/ShaderPass.js"></script>
+		<script src="../node_modules/three/examples/js/postprocessing/OutlinePass.js"></script>
+        <!-- Our scripts -->
+        <script src="js/viewer.js"></script>
+
+	</body>
+</html>
