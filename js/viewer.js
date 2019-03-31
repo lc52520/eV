@@ -1,4 +1,5 @@
 // main viewer script
+//
 // adapted from the three.js example "lightning strike"
 // https://threejs.org/examples/webgl_lightningstrike.html
 //
@@ -241,6 +242,41 @@ function createPlasmaBallScene() {
 	light2.position.set( -0.5, 1, 0.2 );
 	ballScene.add( light2 );
 	scene.add( light2 );
+
+    // Particle sources
+    let source_file_array = [];
+    let source_json = "examples/tantalum/source.json";
+
+    source_file_array.push(source_json);
+
+    // create three.js representations of all particle source objects
+    // particle sources here is an array of THREE.Group objects
+    let particle_sources = make_sources(ballScene, source_file_array);
+
+    // TODO check if there's some race condition here because of async IO
+    //console.log("printing all particle sources");
+    //console.log(particle_sources);
+
+    //for (let i = 0; i < particle_sources.length; i++) {
+    //    //console.log(particle_sources[i]);
+    //    ballScene.add(particle_sources[i]);
+    //}
+
+
+    //var dir = new THREE.Vector3( 1, 2, 0 );
+
+    ////normalize the direction vector (convert to vector of length 1)
+    //dir.normalize();
+
+    //var origin = new THREE.Vector3( 0, 0, 0 );
+    //var length = 1000;
+    //var hex = 0xffff00;
+
+    //var arrowHelper = new THREE.ArrowHelper( dir, origin, length, hex );
+    //var new_group = new THREE.Group();
+    //new_group.add(arrowHelper);
+    ////ballScene.add( arrowHelper );
+    //ballScene.add(new_group);
 
 	// Plasma ball
 

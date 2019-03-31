@@ -1,0 +1,18 @@
+{
+  "type": "egs_parallel_beam",
+  "charge": -1,
+  "direction": {
+      "x": 0,
+      "y": 0,
+      "z": 1
+  },
+  "shape": {
+      "type": "point",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "z": -10
+      }
+  },
+  "trivia": "20 MeV monoenergetic electron beam"
+}
