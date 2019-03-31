@@ -28,32 +28,52 @@ function Source(source_group, raw_source) {
     console.log(raw_source);
 
     // check if the source has a shape (hopefully)
-    if ( raw_source.hasOwnProperty("shape") ) {
-
-        let source_shape = raw_source["shape"];
-
-        if ( source_shape.hasOwnProperty("position") ) {
-
-            let origin = new THREE.Vector3(source_shape.position.x,
-                                           source_shape.position.y,
-                                           source_shape.position.z);
-
-            // if the particle source has a direction, add a direction helper
-            if ( raw_source.hasOwnProperty("direction") ) {
-                let direction = new THREE.Vector3(raw_source.direction.x,
-                                                  raw_source.direction.y,
-                                                  raw_source.direction.z);
-                // normalize just in case
-                direction.normalize();
-                let len = 1000;
-                var source_direction = new THREE.ArrowHelper(direction, origin, len);
-                source_group.add(source_direction);
-
-            } else {
-                console.log("no source direction given");
-            }
-        } else {
-            console.log("no source position given");
-        }
+    // currently can't handle IAEA phsp files as they don't have regular shapes
+    if (! raw_source.hasOwnProperty("shape")) {
+        // TODO print source property types
+        console.log("no shape property for source: ");
+        return;
     }
+
+    //
+
+    // continue property check with the inner shape object of the source
+    let source_shape = raw_source["shape"];
+
+    if (! source_shape.hasOwnProperty("position")) {
+        console.log("no shape position for source: ");
+        return;
+    }
+
+    let origin = new THREE.Vector3(source_shape.position.x,
+                                   source_shape.position.y,
+                                   source_shape.position.z);
+
+    // TODO add the source shape here
+
+    // if the particle source has a direction, add a direction helper
+    if ( raw_source.hasOwnProperty("direction") ) {
+        let direction = new THREE.Vector3(raw_source.direction.x,
+                                          raw_source.direction.y,
+                                          raw_source.direction.z);
+
+        source_group.add( make_direction_helper(direction, origin) );
+
+    } else {
+        console.log("no direction property for source: ");
+    }
+}
+
+// make particle source shape
+function make_source_shape() {
+
+}
+
+// direction helper setup
+function make_direction_helper(direction, origin) {
+    // normalize just in case
+    direction.normalize();
+    let len = 1000;
+    let colour = 0xffff00;
+    return new THREE.ArrowHelper(direction, origin, len, colour);
 }
