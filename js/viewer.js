@@ -5,6 +5,7 @@
 //
 // mxo, March 2019
 
+"use strict";
 
 if ( WEBGL.isWebGLAvailable() === false ) {
 
@@ -246,12 +247,16 @@ function createPlasmaBallScene() {
     // Particle sources
     let source_file_array = [];
     let source_json = "examples/tantalum/source.json";
+    let source2 = "examples/tantalum/shifted.json";
 
     source_file_array.push(source_json);
+    source_file_array.push(source2);
 
     // create three.js representations of all particle source objects
-    // particle sources here is an array of THREE.Group objects
-    let particle_sources = make_sources(ballScene, source_file_array);
+    let source_group = new THREE.Group();
+    ballScene.add(source_group);
+
+    let particle_sources = make_sources(source_group, source_file_array);
 
     // TODO check if there's some race condition here because of async IO
     //console.log("printing all particle sources");

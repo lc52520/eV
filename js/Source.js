@@ -2,33 +2,30 @@
 //
 // mxo, March 2019
 
-async function make_sources(scene, source_files) {
-    //var source_array = Array(source_files.length);
+// go over file names and try and make Source objects from them
+function make_sources(source_group, source_files) {
 
     for (let i = 0; i < source_files.length; i++) {
-        parse_source(scene, source_files[i]);
-        //source_array[i] = await Source( await parse_source(source_files[i]) );
+        parse_source(source_group, source_files[i]);
     }
-
-    //return source_array;
 }
 
+// For each file, make a Source asynchronously
+// -- wanted to use the nice fetch API and can keep rendering while waiting
+//
 // careful with this! should only pass vetted file names to it
-async function parse_source(scene, source_json) {
+async function parse_source(source_group, source_json) {
+
     fetch(source_json)
         .then(response => response.json()) // parse string to json
-        .then(json => Source(scene, json)); // add source to scene
-    //console.log(source);
-    //return source;
+        .then(json => Source(source_group, json)); // add source to source_group
 }
 
-// given a raw parsed source object, add the three.js components needed to view
-// it
-function Source(scene, raw_source) {
+// given a three.js group and a raw parsed source object,
+// add the three.js components needed to view it
+function Source(source_group, raw_source) {
 
     console.log(raw_source);
-
-    var source_group = new THREE.Group();
 
     // check if the source has a shape (hopefully)
     if ( raw_source.hasOwnProperty("shape") ) {
@@ -59,7 +56,4 @@ function Source(scene, raw_source) {
             console.log("no source position given");
         }
     }
-
-    scene.add(source_group);
-    // return source_group;
 }
