@@ -268,7 +268,15 @@ function createPlasmaBallScene() {
     let source_group = new THREE.Group();
     ballScene.add(source_group);
 
-    let particle_sources = make_sources(source_group, source_file_array);
+    // add outlines for source objects
+    var outlineMeshArray = [];
+
+    // outline color
+	scene.userData.outlineColor = new THREE.Color( 0xFF00FF );
+
+    let particle_sources = make_sources(source_group, source_file_array, outlineMeshArray);
+
+    console.log(outlineMeshArray);
 
     //
 
@@ -393,9 +401,12 @@ function createPlasmaBallScene() {
 
 	//};
 
-	var lightningStrike;
-	var lightningStrikeMesh;
-	var outlineMeshArray = [];
+	//var lightningStrike;
+	//var lightningStrikeMesh;
+	//var outlineMeshArray = [];
+
+    //outlineMeshArray = source_group.children;
+    //console.log(outlineMeshArray);
 
 	//scene.userData.recreateRay = function () {
 
@@ -441,7 +452,8 @@ function createPlasmaBallScene() {
 
 		controls.update();
 
-		outlinePass.enabled = scene.userData.outlineEnabled;
+		//outlinePass.enabled = scene.userData.outlineEnabled;
+		outlinePass.enabled = true;
 
 		composer.render();
 

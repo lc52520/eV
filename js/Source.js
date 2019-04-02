@@ -3,14 +3,14 @@
 // mxo, March 2019
 
 // go over file names and try and make Source objects from them
-function make_sources(source_group, source_files) {
+function make_sources(source_group, source_files, outlineMeshArray) {
 
-    make_scene_objects(source_group, source_files, Source);
+    make_scene_objects(source_group, source_files, Source, outlineMeshArray);
 }
 
 // given a three.js group and a raw parsed source object,
 // add the three.js components needed to view it
-function Source(source_group, raw_source) {
+function Source(source_group, raw_source, outlineMeshArray) {
 
     console.log(raw_source);
 
@@ -31,7 +31,7 @@ function Source(source_group, raw_source) {
     }
 
     // add a solid shape to represent the source
-    source_group.add( make_source_shape(source_shape) );
+    source_group.add( make_source_shape(source_shape, outlineMeshArray) );
 
     // if the particle source has a direction, add a direction helper
     if ( raw_source.hasOwnProperty("direction") ) {
@@ -49,7 +49,7 @@ function Source(source_group, raw_source) {
 
 // make particle source shape
 // Assumes that given shapes have an origin
-function make_source_shape(source_shape) {
+function make_source_shape(source_shape, outlineMeshArray) {
 
     // add to shape cstors as required
     if (! source_shape.hasOwnProperty("type")) {
@@ -78,6 +78,8 @@ function make_source_shape(source_shape) {
         default:
             console.log("unsupported source shape type: " + source_shape["type"]);
     }
+
+    outlineMeshArray.push(shape);
 
     return shape;
 }

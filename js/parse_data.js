@@ -3,10 +3,10 @@
 // mxo 2019
 
 // go over file names and try and make three.js objects from them
-function make_scene_objects(scene_group, data_files, data_cstor) {
+function make_scene_objects(scene_group, data_files, data_cstor, post_process_array) {
 
     for (let i = 0; i < data_files.length; i++) {
-        parse_simulation_data(scene_group, data_files[i], data_cstor);
+        parse_simulation_data(scene_group, data_files[i], data_cstor, post_process_array);
     }
 }
 
@@ -15,9 +15,9 @@ function make_scene_objects(scene_group, data_files, data_cstor) {
 // -- other shapes can render while waiting
 //
 // careful with this! should only pass vetted file names to it
-async function parse_simulation_data(scene_group, object_json_file, data_cstor) {
+async function parse_simulation_data(scene_group, object_json_file, data_cstor, post_process_array) {
 
     fetch(object_json_file)
         .then(response => response.json()) // parse string to json
-        .then(json => data_cstor(scene_group, json)); // add source to source_group
+        .then(json => data_cstor(scene_group, json, post_process_array)); // add source to source_group
 }
