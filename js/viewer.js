@@ -90,87 +90,87 @@ function createGUI() {
 
 	gui = new dat.GUI( { width: 350 } );
 
-	var sceneFolder = gui.addFolder( "Scene" );
+	//var sceneFolder = gui.addFolder( "Scene" );
 
-	scene.userData.sceneIndex = currentSceneIndex;
+	//scene.userData.sceneIndex = currentSceneIndex;
 
-	sceneFolder.add( scene.userData, 'sceneIndex', { "Electric Cones": 0, "Plasma Ball": 1, "Storm": 2 } ).name( 'Scene' ).onChange( function ( value ) {
+	//sceneFolder.add( scene.userData, 'sceneIndex', { "Electric Cones": 0, "Plasma Ball": 1, "Storm": 2 } ).name( 'Scene' ).onChange( function ( value ) {
 
-		currentSceneIndex = value;
+	//	currentSceneIndex = value;
 
-		createScene();
+	//	createScene();
 
-	} );
+	//} );
 
-	scene.userData.timeRate = 1;
-	sceneFolder.add( scene.userData, 'timeRate', scene.userData.canGoBackwardsInTime ? -1 : 0, 1 ).name( 'Time rate' );
+	//scene.userData.timeRate = 1;
+	//sceneFolder.add( scene.userData, 'timeRate', scene.userData.canGoBackwardsInTime ? -1 : 0, 1 ).name( 'Time rate' );
 
-	sceneFolder.open();
+	//sceneFolder.open();
 
 	var graphicsFolder = gui.addFolder( "Graphics" );
 
 	graphicsFolder.add( scene.userData, "outlineEnabled" ).name( "Glow enabled" );
 
-	scene.userData.lightningColorRGB = [
-		scene.userData.lightningColor.r * 255,
-		scene.userData.lightningColor.g * 255,
-		scene.userData.lightningColor.b * 255
-	];
-	graphicsFolder.addColor( scene.userData, 'lightningColorRGB' ).name( 'Color' ).onChange( function ( value ) {
-		scene.userData.lightningMaterial.color.setRGB( value[ 0 ], value[ 1 ], value[ 2 ] ).multiplyScalar( 1 / 255 );
-	} );
-	scene.userData.outlineColorRGB = [
-		scene.userData.outlineColor.r * 255,
-		scene.userData.outlineColor.g * 255,
-		scene.userData.outlineColor.b * 255
-	];
-	graphicsFolder.addColor( scene.userData, 'outlineColorRGB' ).name( 'Glow color' ).onChange( function ( value ) {
-		scene.userData.outlineColor.setRGB( value[ 0 ], value[ 1 ], value[ 2 ] ).multiplyScalar( 1 / 255 );
-	} );
+	//scene.userData.lightningColorRGB = [
+	//	scene.userData.lightningColor.r * 255,
+	//	scene.userData.lightningColor.g * 255,
+	//	scene.userData.lightningColor.b * 255
+	//];
+	//graphicsFolder.addColor( scene.userData, 'lightningColorRGB' ).name( 'Color' ).onChange( function ( value ) {
+	//	scene.userData.lightningMaterial.color.setRGB( value[ 0 ], value[ 1 ], value[ 2 ] ).multiplyScalar( 1 / 255 );
+	//} );
+	//scene.userData.outlineColorRGB = [
+	//	scene.userData.outlineColor.r * 255,
+	//	scene.userData.outlineColor.g * 255,
+	//	scene.userData.outlineColor.b * 255
+	//];
+	//graphicsFolder.addColor( scene.userData, 'outlineColorRGB' ).name( 'Glow color' ).onChange( function ( value ) {
+	//	scene.userData.outlineColor.setRGB( value[ 0 ], value[ 1 ], value[ 2 ] ).multiplyScalar( 1 / 255 );
+	//} );
 
-	graphicsFolder.open();
+	//graphicsFolder.open();
 
-	var rayFolder = gui.addFolder( "Ray parameters" );
+	//var rayFolder = gui.addFolder( "Ray parameters" );
 
-	rayFolder.add( scene.userData.rayParams, 'straightness', 0, 1 ).name( 'Straightness' );
-	rayFolder.add( scene.userData.rayParams, 'roughness', 0, 1 ).name( 'Roughness' );
-	rayFolder.add( scene.userData.rayParams, 'radius0', 0.1, 10 ).name( 'Initial radius' );
-	rayFolder.add( scene.userData.rayParams, 'radius1', 0.1, 10 ).name( 'Final radius' );
-	rayFolder.add( scene.userData.rayParams, 'radius0Factor', 0, 1 ).name( 'Subray initial radius' );
-	rayFolder.add( scene.userData.rayParams, 'radius1Factor', 0, 1 ).name( 'Subray final radius' );
-	rayFolder.add( scene.userData.rayParams, 'timeScale', 0, 5 ).name( 'Ray time scale' );
-	rayFolder.add( scene.userData.rayParams, 'subrayPeriod', 0.1, 10 ).name( 'Subray period (s)' );
-	rayFolder.add( scene.userData.rayParams, 'subrayDutyCycle', 0, 1 ).name( 'Subray duty cycle' );
+	//rayFolder.add( scene.userData.rayParams, 'straightness', 0, 1 ).name( 'Straightness' );
+	//rayFolder.add( scene.userData.rayParams, 'roughness', 0, 1 ).name( 'Roughness' );
+	//rayFolder.add( scene.userData.rayParams, 'radius0', 0.1, 10 ).name( 'Initial radius' );
+	//rayFolder.add( scene.userData.rayParams, 'radius1', 0.1, 10 ).name( 'Final radius' );
+	//rayFolder.add( scene.userData.rayParams, 'radius0Factor', 0, 1 ).name( 'Subray initial radius' );
+	//rayFolder.add( scene.userData.rayParams, 'radius1Factor', 0, 1 ).name( 'Subray final radius' );
+	//rayFolder.add( scene.userData.rayParams, 'timeScale', 0, 5 ).name( 'Ray time scale' );
+	//rayFolder.add( scene.userData.rayParams, 'subrayPeriod', 0.1, 10 ).name( 'Subray period (s)' );
+	//rayFolder.add( scene.userData.rayParams, 'subrayDutyCycle', 0, 1 ).name( 'Subray duty cycle' );
 
-	if ( scene.userData.recreateRay ) {
+	//if ( scene.userData.recreateRay ) {
 
-		// Parameters which need to recreate the ray after modification
+	//	// Parameters which need to recreate the ray after modification
 
-		var raySlowFolder = gui.addFolder( "Ray parameters (slow)" );
+	//	var raySlowFolder = gui.addFolder( "Ray parameters (slow)" );
 
-		raySlowFolder.add( scene.userData.rayParams, 'ramification', 0, 15 ).step( 1 ).name( 'Ramification' ).onFinishChange( function () {
+	//	raySlowFolder.add( scene.userData.rayParams, 'ramification', 0, 15 ).step( 1 ).name( 'Ramification' ).onFinishChange( function () {
 
-			scene.userData.recreateRay();
+	//		scene.userData.recreateRay();
 
-		} );
+	//	} );
 
-		raySlowFolder.add( scene.userData.rayParams, 'maxSubrayRecursion', 0, 5 ).step( 1 ).name( 'Recursion' ).onFinishChange( function () {
+	//	raySlowFolder.add( scene.userData.rayParams, 'maxSubrayRecursion', 0, 5 ).step( 1 ).name( 'Recursion' ).onFinishChange( function () {
 
-			scene.userData.recreateRay();
+	//		scene.userData.recreateRay();
 
-		} );
+	//	} );
 
-		raySlowFolder.add( scene.userData.rayParams, 'recursionProbability', 0, 1 ).name( 'Rec. probability' ).onFinishChange( function () {
+	//	raySlowFolder.add( scene.userData.rayParams, 'recursionProbability', 0, 1 ).name( 'Rec. probability' ).onFinishChange( function () {
 
-			scene.userData.recreateRay();
+	//		scene.userData.recreateRay();
 
-		} );
+	//	} );
 
-		raySlowFolder.open();
+	//	raySlowFolder.open();
 
-	}
+	//}
 
-	rayFolder.open();
+	//rayFolder.open();
 
 }
 
@@ -223,7 +223,8 @@ function createPlasmaBallScene() {
 
 	scene.userData.canGoBackwardsInTime = true;
 
-	scene.userData.camera = new THREE.PerspectiveCamera( 27, window.innerWidth / window.innerHeight, 100, 50000 );
+	//scene.userData.camera = new THREE.PerspectiveCamera( 27, window.innerWidth / window.innerHeight, 100, 50000 );
+	scene.userData.camera = new THREE.PerspectiveCamera( 10, window.innerWidth / window.innerHeight, 100, 50000 );
 
 	var ballScene = new THREE.Scene();
 	ballScene.background = new THREE.Color( 0x454545 );
@@ -234,20 +235,20 @@ function createPlasmaBallScene() {
 	ballScene.add( ambientLight );
 	scene.add( ambientLight );
 
-	var light1 = new THREE.DirectionalLight( 0xffffff, 0.5 );
-	light1.position.set( 1, 1, 1 );
-	ballScene.add( light1 );
-	scene.add( light1 );
+	//var light1 = new THREE.DirectionalLight( 0xffffff, 0.5 );
+	//light1.position.set( 1, 1, 1 );
+	//ballScene.add( light1 );
+	//scene.add( light1 );
 
-	var light2 = new THREE.DirectionalLight( 0xffffff, 1.5 );
-	light2.position.set( -0.5, 1, 0.2 );
-	ballScene.add( light2 );
-	scene.add( light2 );
+	//var light2 = new THREE.DirectionalLight( 0xffffff, 1.5 );
+	//light2.position.set( -0.5, 1, 0.2 );
+	//ballScene.add( light2 );
+	//scene.add( light2 );
 
     // Particle sources
     let source_file_array = [];
-    let source_json = "examples/tantalum/source.json";
-    let source2 = "examples/tantalum/shifted.json";
+    let source_json = "examples/tantalum-plate/source.json";
+    let source2 =     "examples/tantalum-plate/shifted.json";
 
     source_file_array.push(source_json);
     source_file_array.push(source2);
@@ -285,124 +286,126 @@ function createPlasmaBallScene() {
 
 	// Plasma ball
 
-	scene.userData.lightningColor = new THREE.Color( 0xFFB0FF );
-	scene.userData.outlineColor = new THREE.Color( 0xFF00FF );
+	//scene.userData.lightningColor = new THREE.Color( 0xFFB0FF );
+	//scene.userData.outlineColor = new THREE.Color( 0xFF00FF );
 
-	scene.userData.lightningMaterial =  new THREE.MeshBasicMaterial( { color: scene.userData.lightningColor, side: THREE.DoubleSide } );
+	//scene.userData.lightningMaterial =  new THREE.MeshBasicMaterial( { color: scene.userData.lightningColor, side: THREE.DoubleSide } );
 
-	var r = "textures/cube/Bridge2/";
-	var urls = [ r + "posx.jpg", r + "negx.jpg",
-				 r + "posy.jpg", r + "negy.jpg",
-				 r + "posz.jpg", r + "negz.jpg" ];
+	//var r = "textures/cube/Bridge2/";
+	//var urls = [ r + "posx.jpg", r + "negx.jpg",
+	//			 r + "posy.jpg", r + "negy.jpg",
+	//			 r + "posz.jpg", r + "negz.jpg" ];
 
-	var textureCube = new THREE.CubeTextureLoader().load( urls );
-	textureCube.format = THREE.RGBFormat;
-	textureCube.mapping = THREE.CubeReflectionMapping;
+	//var textureCube = new THREE.CubeTextureLoader().load( urls );
+	//textureCube.format = THREE.RGBFormat;
+	//textureCube.mapping = THREE.CubeReflectionMapping;
 
-	var sphereMaterial = new THREE.MeshPhysicalMaterial( {
-		transparent: true,
-		depthWrite: false,
-		opacity: 0.15,
-		color: 0,
-		metalness: 1,
-		roughness: 0,
-		reflectivity: 0,
-		envMap: textureCube
-	} );
+	//var sphereMaterial = new THREE.MeshPhysicalMaterial( {
+	//	transparent: true,
+	//	depthWrite: false,
+	//	opacity: 0.15,
+	//	color: 0,
+	//	metalness: 1,
+	//	roughness: 0,
+	//	reflectivity: 0,
+	//	envMap: textureCube
+	//} );
 
-	var sphereHeight = 300;
-	var sphereRadius = 200;
+	//var sphereHeight = 300;
+	//var sphereRadius = 200;
 
-	scene.userData.camera.position.set( 5 * sphereRadius, 2 * sphereHeight, 6 * sphereRadius );
+    // TODO fix for given shape size
+	scene.userData.camera.position.set( 100, 60, 50);
+	//scene.userData.camera.position.set( 5 * sphereRadius, 2 * sphereHeight, 6 * sphereRadius );
 
-	var sphereMesh = new THREE.Mesh( new THREE.SphereBufferGeometry( sphereRadius, 80, 40 ), sphereMaterial );
-	sphereMesh.position.set( 0, sphereHeight, 0 );
-	ballScene.add( sphereMesh );
+	//var sphereMesh = new THREE.Mesh( new THREE.SphereBufferGeometry( sphereRadius, 80, 40 ), sphereMaterial );
+	//sphereMesh.position.set( 0, sphereHeight, 0 );
+	//ballScene.add( sphereMesh );
 
-	var sphere = new THREE.Sphere( sphereMesh.position, sphereRadius );
+	//var sphere = new THREE.Sphere( sphereMesh.position, sphereRadius );
 
-	var spherePlasma = new THREE.Mesh( new THREE.SphereBufferGeometry( sphereRadius * 0.05, 24, 12 ), scene.userData.lightningMaterial );
-	spherePlasma.position.copy( sphereMesh.position );
-	spherePlasma.scale.y = 0.6;
-	scene.add( spherePlasma );
+	//var spherePlasma = new THREE.Mesh( new THREE.SphereBufferGeometry( sphereRadius * 0.05, 24, 12 ), scene.userData.lightningMaterial );
+	//spherePlasma.position.copy( sphereMesh.position );
+	//spherePlasma.scale.y = 0.6;
+	//scene.add( spherePlasma );
 
-	var post = new THREE.Mesh(
-		new THREE.CylinderBufferGeometry( sphereRadius * 0.06, sphereRadius * 0.06, sphereHeight, 6, 1, true ),
-		new THREE.MeshLambertMaterial( { color: 0x020202 } )
-	);
-	post.position.y = sphereHeight * 0.5 - sphereRadius * 0.05 * 1.2;
-	scene.add( post );
+	//var post = new THREE.Mesh(
+	//	new THREE.CylinderBufferGeometry( sphereRadius * 0.06, sphereRadius * 0.06, sphereHeight, 6, 1, true ),
+	//	new THREE.MeshLambertMaterial( { color: 0x020202 } )
+	//);
+	//post.position.y = sphereHeight * 0.5 - sphereRadius * 0.05 * 1.2;
+	//scene.add( post );
 
-	var box = new THREE.Mesh( new THREE.BoxBufferGeometry( sphereHeight * 0.5, sphereHeight * 0.1, sphereHeight * 0.5 ), post.material );
-	box.position.y = sphereHeight * 0.05 * 0.5;
-	scene.add( box );
+	//var box = new THREE.Mesh( new THREE.BoxBufferGeometry( sphereHeight * 0.5, sphereHeight * 0.1, sphereHeight * 0.5 ), post.material );
+	//box.position.y = sphereHeight * 0.05 * 0.5;
+	//scene.add( box );
 
-	var rayDirection = new THREE.Vector3();
-	var rayLength = 0;
-	var vec1 = new THREE.Vector3();
-	var vec2 = new THREE.Vector3();
+	//var rayDirection = new THREE.Vector3();
+	//var rayLength = 0;
+	//var vec1 = new THREE.Vector3();
+	//var vec2 = new THREE.Vector3();
 
-	scene.userData.rayParams = {
+	//scene.userData.rayParams = {
 
-		sourceOffset: sphereMesh.position,
-		destOffset: new THREE.Vector3( sphereRadius, 0, 0 ).add( sphereMesh.position ),
-		radius0: 4,
-		radius1: 4,
-		radius0Factor: 0.82,
-		minRadius: 2.5,
-		maxIterations: 6,
-		isEternal: true,
+	//	sourceOffset: sphereMesh.position,
+	//	destOffset: new THREE.Vector3( sphereRadius, 0, 0 ).add( sphereMesh.position ),
+	//	radius0: 4,
+	//	radius1: 4,
+	//	radius0Factor: 0.82,
+	//	minRadius: 2.5,
+	//	maxIterations: 6,
+	//	isEternal: true,
 
-		timeScale: 0.6,
-		propagationTimeFactor: 0.15,
-		vanishingTimeFactor: 0.87,
-		subrayPeriod: 0.8,
-		ramification: 5,
-		recursionProbability: 0.8,
+	//	timeScale: 0.6,
+	//	propagationTimeFactor: 0.15,
+	//	vanishingTimeFactor: 0.87,
+	//	subrayPeriod: 0.8,
+	//	ramification: 5,
+	//	recursionProbability: 0.8,
 
-		roughness: 0.85,
-		straightness: 0.7,
+	//	roughness: 0.85,
+	//	straightness: 0.7,
 
-		onSubrayCreation: function ( segment, parentSubray, childSubray, lightningStrike ) {
+	//	onSubrayCreation: function ( segment, parentSubray, childSubray, lightningStrike ) {
 
-			lightningStrike.subrayConePosition( segment, parentSubray, childSubray, 0.6, 0.9, 0.7 );
+	//		lightningStrike.subrayConePosition( segment, parentSubray, childSubray, 0.6, 0.9, 0.7 );
 
-			// Sphere projection
+	//		// Sphere projection
 
-			vec1.subVectors( childSubray.pos1, lightningStrike.rayParameters.sourceOffset );
-			vec2.set( 0, 0, 0 );
-			if ( lightningStrike.randomGenerator.random() < 0.7 ) {
-				vec2.copy( rayDirection ).multiplyScalar( rayLength * 1.0865 );
-			}
-			vec1.add( vec2 ).setLength( rayLength );
-			childSubray.pos1.addVectors( vec1, lightningStrike.rayParameters.sourceOffset );
+	//		vec1.subVectors( childSubray.pos1, lightningStrike.rayParameters.sourceOffset );
+	//		vec2.set( 0, 0, 0 );
+	//		if ( lightningStrike.randomGenerator.random() < 0.7 ) {
+	//			vec2.copy( rayDirection ).multiplyScalar( rayLength * 1.0865 );
+	//		}
+	//		vec1.add( vec2 ).setLength( rayLength );
+	//		childSubray.pos1.addVectors( vec1, lightningStrike.rayParameters.sourceOffset );
 
-		}
+	//	}
 
-	};
+	//};
 
 	var lightningStrike;
 	var lightningStrikeMesh;
 	var outlineMeshArray = [];
 
-	scene.userData.recreateRay = function () {
+	//scene.userData.recreateRay = function () {
 
-		if ( lightningStrikeMesh ) {
-			scene.remove( lightningStrikeMesh );
-		}
+	//	if ( lightningStrikeMesh ) {
+	//		scene.remove( lightningStrikeMesh );
+	//	}
 
-		lightningStrike = new THREE.LightningStrike( scene.userData.rayParams );
-		lightningStrikeMesh = new THREE.Mesh( lightningStrike, scene.userData.lightningMaterial );
+	//	lightningStrike = new THREE.LightningStrike( scene.userData.rayParams );
+	//	lightningStrikeMesh = new THREE.Mesh( lightningStrike, scene.userData.lightningMaterial );
 
-		outlineMeshArray.length = 0;
-		outlineMeshArray.push( lightningStrikeMesh );
-		outlineMeshArray.push( spherePlasma );
+	//	outlineMeshArray.length = 0;
+	//	outlineMeshArray.push( lightningStrikeMesh );
+	//	outlineMeshArray.push( spherePlasma );
 
-		scene.add( lightningStrikeMesh );
+	//	scene.add( lightningStrikeMesh );
 
-	}
+	//}
 
-	scene.userData.recreateRay();
+	//scene.userData.recreateRay();
 
 	// Compose rendering
 
@@ -418,11 +421,11 @@ function createPlasmaBallScene() {
 
 	scene.userData.render = function ( time ) {
 
-		rayDirection.subVectors( lightningStrike.rayParameters.destOffset, lightningStrike.rayParameters.sourceOffset );
-		rayLength = rayDirection.length();
-		rayDirection.normalize();
+		//rayDirection.subVectors( lightningStrike.rayParameters.destOffset, lightningStrike.rayParameters.sourceOffset );
+		//rayLength = rayDirection.length();
+		//rayDirection.normalize();
 
-		lightningStrike.update( time );
+		//lightningStrike.update( time );
 
 		controls.update();
 
@@ -435,7 +438,7 @@ function createPlasmaBallScene() {
 	// Controls
 
 	var controls = new THREE.OrbitControls( scene.userData.camera, renderer.domElement );
-	controls.target.copy( sphereMesh.position );
+	//controls.target.copy( sphereMesh.position );
 	controls.enableDamping = true;
 	controls.dampingFactor = 0.25;
 
@@ -473,13 +476,13 @@ function createPlasmaBallScene() {
 
 		raycaster.setFromCamera( mouse, scene.userData.camera );
 
-		var result = raycaster.ray.intersectSphere( sphere, intersection );
+		//var result = raycaster.ray.intersectSphere( sphere, intersection );
 
-		if ( result !== null ) {
+		//if ( result !== null ) {
 
-			lightningStrike.rayParameters.destOffset.copy( intersection );
+		//	lightningStrike.rayParameters.destOffset.copy( intersection );
 
-		}
+		//}
 
 	}
 

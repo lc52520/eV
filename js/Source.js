@@ -11,7 +11,8 @@ function make_sources(source_group, source_files) {
 }
 
 // For each file, make a Source asynchronously
-// -- wanted to use the nice fetch API and can keep rendering while waiting
+// -- wanted to use the nice fetch API
+// -- other shapes can render while waiting
 //
 // careful with this! should only pass vetted file names to it
 async function parse_source(source_group, source_json) {
@@ -35,8 +36,6 @@ function Source(source_group, raw_source) {
         return;
     }
 
-    //
-
     // continue property check with the inner shape object of the source
     let source_shape = raw_source["shape"];
 
@@ -45,11 +44,8 @@ function Source(source_group, raw_source) {
         return;
     }
 
-    let origin = new THREE.Vector3(source_shape.position.x,
-                                   source_shape.position.y,
-                                   source_shape.position.z);
-
-    // TODO add the source shape here
+    // add a solid shape to represent the source
+    source_group.add( make_source_shape(source_shape) );
 
     // if the particle source has a direction, add a direction helper
     if ( raw_source.hasOwnProperty("direction") ) {
@@ -57,6 +53,7 @@ function Source(source_group, raw_source) {
                                           raw_source.direction.y,
                                           raw_source.direction.z);
 
+        let origin = get_shape_origin(source_shape);
         source_group.add( make_direction_helper(direction, origin) );
 
     } else {
@@ -65,15 +62,50 @@ function Source(source_group, raw_source) {
 }
 
 // make particle source shape
-function make_source_shape() {
+// Assumes that given shapes have an origin
+function make_source_shape(source_shape) {
+    let origin = get_shape_origin(source_shape);
 
+    // add to shape cstors as required
+    if (! source_shape.hasOwnProperty("type")) {
+        console.log("no type given for source shape, cannot build source object");
+        return;
+    }
+
+
+
+    switch( source_shape["type"] ) {
+
+        case "point":
+
+            break;
+
+        default:
+            console.log("unsupported source shape type: " + source_shape["type"]);
+    }
 }
 
 // direction helper setup
 function make_direction_helper(direction, origin) {
     // normalize just in case
     direction.normalize();
-    let len = 1000;
-    let colour = 0xffff00;
+    let len = 10; // arbitrary for now
+    let colour = 0xffff00; // default yellow colour
     return new THREE.ArrowHelper(direction, origin, len, colour);
 }
+
+// get origin of a shape with a given position
+function get_shape_origin(source_shape) {
+    if (! source_shape.hasOwnProperty("position")) {
+        console.log("no position given for source: ");
+        return;
+    }
+
+    // careful -> assume here that all positions have xyz coords
+    return new THREE.Vector3(source_shape.position.x,
+                             source_shape.position.y,
+                             source_shape.position.z);
+}
+
+// error reporting using strings
+function source_creation_error(preamble, source_obj) {}
