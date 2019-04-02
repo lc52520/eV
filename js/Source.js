@@ -5,21 +5,7 @@
 // go over file names and try and make Source objects from them
 function make_sources(source_group, source_files) {
 
-    for (let i = 0; i < source_files.length; i++) {
-        parse_source(source_group, source_files[i]);
-    }
-}
-
-// For each file, make a Source asynchronously
-// -- wanted to use the nice fetch API
-// -- other shapes can render while waiting
-//
-// careful with this! should only pass vetted file names to it
-async function parse_source(source_group, source_json) {
-
-    fetch(source_json)
-        .then(response => response.json()) // parse string to json
-        .then(json => Source(source_group, json)); // add source to source_group
+    make_scene_objects(source_group, source_files, Source);
 }
 
 // given a three.js group and a raw parsed source object,
@@ -64,7 +50,6 @@ function Source(source_group, raw_source) {
 // make particle source shape
 // Assumes that given shapes have an origin
 function make_source_shape(source_shape) {
-    let origin = get_shape_origin(source_shape);
 
     // add to shape cstors as required
     if (! source_shape.hasOwnProperty("type")) {
@@ -72,24 +57,36 @@ function make_source_shape(source_shape) {
         return;
     }
 
+    // three.js shape needs a material and a mesh
+    let shape;
 
+    // all sources have the same colour for now
+    let material = new THREE.MeshBasicMaterial( {color: 0x4d41b1} );
 
     switch( source_shape["type"] ) {
 
         case "point":
+            let radius = 0.5;
+            let origin = get_shape_origin(source_shape);
+            var geometry = new THREE.SphereGeometry( radius );
+            shape = new THREE.Mesh( geometry, material );
+            console.log(get_shape_origin(source_shape));
+            shape.position.set(origin.x, origin.y, origin.z);
 
             break;
 
         default:
             console.log("unsupported source shape type: " + source_shape["type"]);
     }
+
+    return shape;
 }
 
 // direction helper setup
 function make_direction_helper(direction, origin) {
     // normalize just in case
     direction.normalize();
-    let len = 10; // arbitrary for now
+    let len = 5; // arbitrary for now
     let colour = 0xffff00; // default yellow colour
     return new THREE.ArrowHelper(direction, origin, len, colour);
 }

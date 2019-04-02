@@ -90,6 +90,17 @@ function createGUI() {
 
 	gui = new dat.GUI( { width: 350 } );
 
+    // source parameters
+    var sourceFolder = gui.addFolder( "Particle sources" )
+
+    // visibility
+    scene.userData.sourcesVisible = true;
+	sourceFolder.add( scene.userData, "sourcesVisible" ).name( "Show particle sources" );
+
+	sourceFolder.open();
+
+////////////////////////////////////////////////////////////////////////////////
+
 	//var sceneFolder = gui.addFolder( "Scene" );
 
 	//scene.userData.sceneIndex = currentSceneIndex;
@@ -224,7 +235,7 @@ function createPlasmaBallScene() {
 	scene.userData.canGoBackwardsInTime = true;
 
 	//scene.userData.camera = new THREE.PerspectiveCamera( 27, window.innerWidth / window.innerHeight, 100, 50000 );
-	scene.userData.camera = new THREE.PerspectiveCamera( 10, window.innerWidth / window.innerHeight, 100, 50000 );
+	scene.userData.camera = new THREE.PerspectiveCamera( 10, window.innerWidth / window.innerHeight, 0.1, 5000 );
 
 	var ballScene = new THREE.Scene();
 	ballScene.background = new THREE.Color( 0x454545 );
@@ -259,6 +270,20 @@ function createPlasmaBallScene() {
 
     let particle_sources = make_sources(source_group, source_file_array);
 
+    //
+
+    // create three.js representations of all materials
+
+    let shape_file_array = [];
+    let tantalum_box = "examples/tantalum-plate/plate.json";
+
+    shape_file_array.push(tantalum_box);
+
+    let shape_group = new THREE.Group();
+    ballScene.add(shape_group);
+
+    let media = make_shapes(shape_group, shape_file_array);
+
     // TODO check if there's some race condition here because of async IO
     //console.log("printing all particle sources");
     //console.log(particle_sources);
@@ -267,22 +292,6 @@ function createPlasmaBallScene() {
     //    //console.log(particle_sources[i]);
     //    ballScene.add(particle_sources[i]);
     //}
-
-
-    //var dir = new THREE.Vector3( 1, 2, 0 );
-
-    ////normalize the direction vector (convert to vector of length 1)
-    //dir.normalize();
-
-    //var origin = new THREE.Vector3( 0, 0, 0 );
-    //var length = 1000;
-    //var hex = 0xffff00;
-
-    //var arrowHelper = new THREE.ArrowHelper( dir, origin, length, hex );
-    //var new_group = new THREE.Group();
-    //new_group.add(arrowHelper);
-    ////ballScene.add( arrowHelper );
-    //ballScene.add(new_group);
 
 	// Plasma ball
 
@@ -315,7 +324,7 @@ function createPlasmaBallScene() {
 	//var sphereRadius = 200;
 
     // TODO fix for given shape size
-	scene.userData.camera.position.set( 100, 60, 50);
+	scene.userData.camera.position.set(100, 60, 50);
 	//scene.userData.camera.position.set( 5 * sphereRadius, 2 * sphereHeight, 6 * sphereRadius );
 
 	//var sphereMesh = new THREE.Mesh( new THREE.SphereBufferGeometry( sphereRadius, 80, 40 ), sphereMaterial );
@@ -420,6 +429,9 @@ function createPlasmaBallScene() {
 	var outlinePass = createOutline( scene, outlineMeshArray, scene.userData.outlineColor );
 
 	scene.userData.render = function ( time ) {
+
+        // check if we want sources visible
+        source_group.visible = scene.userData.sourcesVisible;
 
 		//rayDirection.subVectors( lightningStrike.rayParameters.destOffset, lightningStrike.rayParameters.sourceOffset );
 		//rayLength = rayDirection.length();
