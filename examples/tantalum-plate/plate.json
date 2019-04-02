@@ -1,0 +1,14 @@
+{
+    "media": "tantalum",
+    "type": "slab",
+    "start": {
+      "x": -5,
+      "y": -5,
+      "z": 0
+    },
+    "extents": {
+      "dx": 10,
+      "dy": 10,
+      "dz": 0.1
+    }
+}
