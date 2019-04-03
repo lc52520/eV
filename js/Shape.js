@@ -154,7 +154,8 @@ function match_material(medium_name) {
 
     switch (medium_name) {
         case "tantalum":
-            material = new THREE.MeshBasicMaterial( {color: 0x78FF78} );
+            //material = new THREE.MeshBasicMaterial( {color: 0x78FF78} );
+            material = new THREE.MeshBasicMaterial( {color: 0x222222} );
             //material = new THREE.MeshPhysicalMaterial( {color: 0x78FF78, roughness: 0.5, metalness: 1, lights: true} );
             break;
 

@@ -19,7 +19,7 @@ var camera, scene, renderer, composer, gui;
 
 var currentSceneIndex = 0;
 
-var currentTime = 0;
+var currentStep = 0;
 
 var sceneCreators = [
 	createPlasmaBallScene,
@@ -106,7 +106,7 @@ function createGUI() {
     var miscFolder = gui.addFolder( "General" )
 
     // visibility
-    scene.userData.axesVisible = true;
+    scene.userData.axesVisible = false;
 	miscFolder.add( scene.userData, "axesVisible" ).name( "Show axes" );
 
 	//miscFolder.open();
@@ -132,9 +132,22 @@ function createGUI() {
     // track parameters
     var trackFolder = gui.addFolder( "Particle tracks" )
 
-    // visibility
     scene.userData.tracksVisible = false;
-	shapeFolder.add( scene.userData, "tracksVisible" ).name( "Show particle tracks" );
+	trackFolder.add( scene.userData, "tracksVisible" ).name( "Show particle tracks" );
+    scene.userData.loop = false;
+    scene.userData.loop_toggle = function() {
+        scene.userData.loop = !scene.userData.loop;
+    }
+	trackFolder.add( scene.userData, "loop_toggle" ).name( "Loop particle tracks" );
+
+    // reset particle track state
+    scene.userData.resetTracks = false;
+    scene.userData.resetTracksFn = function() {
+        scene.userData.resetTracks = true;
+        console.log("reset tracks");
+    }
+
+	trackFolder.add( scene.userData, "resetTracksFn" ).name( "Reset particle tracks?" );
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -144,9 +157,9 @@ function createGUI() {
 
 	//sceneFolder.open();
 
-	var graphicsFolder = gui.addFolder( "Graphics" );
+	//var graphicsFolder = gui.addFolder( "Graphics" );
 
-	graphicsFolder.add( scene.userData, "outlineEnabled" ).name( "Glow enabled" );
+	//graphicsFolder.add( scene.userData, "outlineEnabled" ).name( "Glow enabled" );
 
 	//scene.userData.lightningColorRGB = [
 	//	scene.userData.lightningColor.r * 255,
@@ -224,15 +237,17 @@ function animate() {
 
 function render() {
 
-	currentTime += scene.userData.timeRate * clock.getDelta();
+	//currentTime += scene.userData.timeRate * clock.getDelta();
 
-	if ( currentTime < 0 ) {
+    currentStep += 1;
 
-		currentTime = 0;
+	if ( currentStep < 0 ) {
+
+		currentStep = 0;
 
 	}
 
-	scene.userData.render( currentTime );
+	scene.userData.render( currentStep );
 
 }
 
@@ -331,6 +346,18 @@ function createPlasmaBallScene() {
     ballScene.add(vacuum_group);
 
     let media = make_shapes(shape_group, vacuum_group, shape_file_array);
+
+    // particle tracks
+    let track_file = "examples/tantalum-plate/tracks.json";
+    let track_array = [];
+
+    let track_group = new THREE.Group();
+    let tracks = new TrackSet(track_group);
+
+    ballScene.add(tracks.group);
+
+    parse_track_file(track_file, tracks);
+
 
     // TODO check if there's some race condition here because of async IO
     //console.log("printing all particle sources");
@@ -490,10 +517,21 @@ function createPlasmaBallScene() {
         // check if we want vacuum outlines visible
         vacuum_group.visible = scene.userData.vacuumVisible;
 
+        tracks.group.visible = scene.userData.tracksVisible;
 
-        if (scene.userData.tracksVisible) {
+        if (scene.userData.resetTracks) {
 
-            console.log("loop_tracks");
+            //console.log("showing all tracks");
+            tracks.reset(ballScene);
+            // reset the flag
+            scene.userData.resetTracks = false;
+            scene.userData.loop = false;
+
+            // restart time
+            currentStep = 0;
+
+        } else if(scene.userData.loop) {
+            tracks.update(ballScene, time);
         }
 
 		//rayDirection.subVectors( lightningStrike.rayParameters.destOffset, lightningStrike.rayParameters.sourceOffset );
@@ -639,7 +677,7 @@ function createWaterPhantomScene() {
     let media = make_shapes(shape_group, vacuum_group, shape_file_array);
 
     // TODO fix for given shape size
-	scene.userData.camera.position.set(100, 60, 50);
+	scene.userData.camera.position.set(100, 60, 150);
 
 	// Compose rendering
 
