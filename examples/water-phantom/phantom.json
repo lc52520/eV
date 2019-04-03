@@ -1,0 +1,13 @@
+{
+    "medium": "water",
+    "type": "cylinder",
+    "position": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    },
+    "dimensions": {
+      "radius": 5,
+      "height": 10
+    }
+}

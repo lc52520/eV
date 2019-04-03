@@ -1,0 +1,14 @@
+{
+    "medium": "vacuum",
+    "type": "slab",
+    "position": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    },
+    "dimensions": {
+      "width":  20,
+      "height": 20,
+      "depth":  20
+    }
+}

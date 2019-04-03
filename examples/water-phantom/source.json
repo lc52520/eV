@@ -1,0 +1,13 @@
+{
+  "type": "point_source",
+  "charge": 0,
+  "shape": {
+      "type": "point",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      }
+  },
+  "trivia": "100 keV monoenergetic photon beam"
+}

@@ -20,6 +20,7 @@ function Shape(scene_group, raw_shape, vacuum_group) {
     }
 
     let shape;
+    let origin;
     let vacuumFlag;
 
     switch( raw_shape["type"] ) {
@@ -30,7 +31,16 @@ function Shape(scene_group, raw_shape, vacuum_group) {
             shape = shape_data.shape;
             vacuumFlag = shape_data.vacuumFlag;
 
-            let origin = get_shape_origin(raw_shape);
+            origin = get_shape_origin(raw_shape);
+            shape.position.set(origin.x, origin.y, origin.z);
+            break; // looks weird but if return is ever taken out we'll be safe
+
+        case "cylinder":
+            var shape_data = make_cylinder(raw_shape);
+            shape = shape_data.shape;
+            vacuumFlag = shape_data.vacuumFlag;
+
+            origin = get_shape_origin(raw_shape);
             shape.position.set(origin.x, origin.y, origin.z);
             break; // looks weird but if return is ever taken out we'll be safe
 
@@ -92,6 +102,51 @@ function make_slab(raw_shape) {
     };
 }
 
+function make_cylinder(raw_shape) {
+
+    let material = new THREE.MeshBasicMaterial( {color: 0xcccccc} );
+
+    let vacuumFlag = false; // vacuum shapes are rendered differently
+
+    // check if a medium exists
+    if (! raw_shape.hasOwnProperty("medium")) {
+        console.log("no medium given, using default material colour");
+    } else {
+        let medium = raw_shape["medium"];
+        material = match_material(medium);
+
+        if (medium === "vacuum") { vacuumFlag = true; }
+    }
+
+    let geometry;
+
+    if (! raw_shape.hasOwnProperty("dimensions")) {
+        console.log("no dimensions given for slab, aborting");
+        return;
+    }
+
+    geometry = new THREE.CylinderGeometry(raw_shape["dimensions"].radius,
+                                          raw_shape["dimensions"].radius,
+                                          raw_shape["dimensions"].height,
+                                          32);
+
+    // vacuum shapes are handled differently
+    if (vacuumFlag) {
+      let edges = new THREE.EdgesGeometry( geometry );
+      return {
+          shape: new THREE.LineSegments( edges, new THREE.LineBasicMaterial({ color: 0xffffff })),
+          vacuumFlag: true
+      };
+    }
+
+    // make the slab
+    return {
+        shape: new THREE.Mesh(geometry, material),
+        vacuumFlag: false
+    };
+}
+
+
 // memoized material lookup, can change in the GUI
 function match_material(medium_name) {
 
@@ -101,6 +156,16 @@ function match_material(medium_name) {
         case "tantalum":
             material = new THREE.MeshBasicMaterial( {color: 0x78FF78} );
             //material = new THREE.MeshPhysicalMaterial( {color: 0x78FF78, roughness: 0.5, metalness: 1, lights: true} );
+            break;
+
+        case "water":
+            material = new THREE.MeshBasicMaterial( {color: 0x00DCFF, transparent: true, opacity: 0.3} );
+            break;
+
+        default:
+            console.log("unknown material: " + medium_name + " ; using default material");
+            material = new THREE.MeshBasicMaterial( {color: 0xcccccc} );
+
     }
 
     return material;

@@ -23,6 +23,7 @@ var currentTime = 0;
 
 var sceneCreators = [
 	createPlasmaBallScene,
+    createWaterPhantomScene,
 ];
 
 var textureLoader;
@@ -90,23 +91,16 @@ function createGUI() {
 
 	gui = new dat.GUI( { width: 350 } );
 
-    // source parameters
-    var sourceFolder = gui.addFolder( "Particle sources" )
+	var sceneFolder = gui.addFolder( "Model" );
 
-    // visibility
-    scene.userData.sourcesVisible = true;
-	sourceFolder.add( scene.userData, "sourcesVisible" ).name( "Show particle sources" );
+	scene.userData.sceneIndex = currentSceneIndex;
 
-	sourceFolder.open();
+	sceneFolder.add( scene.userData, 'sceneIndex', { "Tantalum plate": 0, "Water phantom": 1} ).name( 'Model' ).onChange( function ( value ) {
+		currentSceneIndex = value;
+		createScene();
+	} );
 
-    // material parameters
-    var shapeFolder = gui.addFolder( "Materials" )
-
-    // visibility
-    scene.userData.vacuumVisible = true;
-	shapeFolder.add( scene.userData, "vacuumVisible" ).name( "Show vacuum outlines" );
-
-	shapeFolder.open();
+    sceneFolder.open();
 
     // Miscellaneous options
     var miscFolder = gui.addFolder( "General" )
@@ -115,21 +109,35 @@ function createGUI() {
     scene.userData.axesVisible = true;
 	miscFolder.add( scene.userData, "axesVisible" ).name( "Show axes" );
 
-	miscFolder.open();
+	//miscFolder.open();
+
+    // source parameters
+    var sourceFolder = gui.addFolder( "Particle sources" )
+
+    // visibility
+    scene.userData.sourcesVisible = true;
+	sourceFolder.add( scene.userData, "sourcesVisible" ).name( "Show particle sources" );
+
+	//sourceFolder.open();
+
+    // material parameters
+    var shapeFolder = gui.addFolder( "Materials" )
+
+    // visibility
+    scene.userData.vacuumVisible = true;
+	shapeFolder.add( scene.userData, "vacuumVisible" ).name( "Show vacuum outlines" );
+
+	//shapeFolder.open();
+
+    // track parameters
+    var trackFolder = gui.addFolder( "Particle tracks" )
+
+    // visibility
+    scene.userData.tracksVisible = false;
+	shapeFolder.add( scene.userData, "tracksVisible" ).name( "Show particle tracks" );
 
 ////////////////////////////////////////////////////////////////////////////////
 
-	//var sceneFolder = gui.addFolder( "Scene" );
-
-	//scene.userData.sceneIndex = currentSceneIndex;
-
-	//sceneFolder.add( scene.userData, 'sceneIndex', { "Electric Cones": 0, "Plasma Ball": 1, "Storm": 2 } ).name( 'Scene' ).onChange( function ( value ) {
-
-	//	currentSceneIndex = value;
-
-	//	createScene();
-
-	//} );
 
 	//scene.userData.timeRate = 1;
 	//sceneFolder.add( scene.userData, 'timeRate', scene.userData.canGoBackwardsInTime ? -1 : 0, 1 ).name( 'Time rate' );
@@ -464,6 +472,180 @@ function createPlasmaBallScene() {
 	composer.passes = [];
 
 	composer.addPass( new THREE.RenderPass( ballScene, scene.userData.camera ) );
+
+	var rayPass = new THREE.RenderPass( scene, scene.userData.camera );
+	rayPass.clear = false;
+	composer.addPass( rayPass );
+
+	var outlinePass = createOutline( scene, outlineMeshArray, scene.userData.outlineColor );
+
+	scene.userData.render = function ( time ) {
+
+        // check for toggling axes
+        axesHelper.visible = scene.userData.axesVisible;
+
+        // check if we want sources visible
+        source_group.visible = scene.userData.sourcesVisible;
+
+        // check if we want vacuum outlines visible
+        vacuum_group.visible = scene.userData.vacuumVisible;
+
+
+        if (scene.userData.tracksVisible) {
+
+            console.log("loop_tracks");
+        }
+
+		//rayDirection.subVectors( lightningStrike.rayParameters.destOffset, lightningStrike.rayParameters.sourceOffset );
+		//rayLength = rayDirection.length();
+		//rayDirection.normalize();
+
+		//lightningStrike.update( time );
+
+		controls.update();
+
+		//outlinePass.enabled = scene.userData.outlineEnabled;
+		outlinePass.enabled = true;
+
+		composer.render();
+
+	};
+
+	// Controls
+
+	var controls = new THREE.OrbitControls( scene.userData.camera, renderer.domElement );
+	//controls.target.copy( sphereMesh.position );
+	controls.enableDamping = true;
+	controls.dampingFactor = 0.25;
+
+	// Sphere mouse raycasting
+
+	window.addEventListener( 'mousemove', onTouchMove );
+	window.addEventListener( 'touchmove', onTouchMove );
+
+	function onTouchMove( event ) {
+
+		var x, y;
+
+		if ( event.changedTouches ) {
+
+			x = event.changedTouches[ 0 ].pageX;
+			y = event.changedTouches[ 0 ].pageY;
+
+		} else {
+
+			x = event.clientX;
+			y = event.clientY;
+
+		}
+
+		mouse.x = ( x / window.innerWidth ) * 2 - 1;
+		mouse.y = - ( y / window.innerHeight ) * 2 + 1;
+
+		checkIntersection();
+
+	}
+
+	var intersection = new THREE.Vector3();
+
+	function checkIntersection() {
+
+		raycaster.setFromCamera( mouse, scene.userData.camera );
+
+		//var result = raycaster.ray.intersectSphere( sphere, intersection );
+
+		//if ( result !== null ) {
+
+		//	lightningStrike.rayParameters.destOffset.copy( intersection );
+
+		//}
+
+	}
+
+	return scene;
+
+}
+
+function createWaterPhantomScene() {
+
+	var scene = new THREE.Scene();
+
+	//scene.userData.camera = new THREE.PerspectiveCamera( 27, window.innerWidth / window.innerHeight, 100, 50000 );
+	scene.userData.camera = new THREE.PerspectiveCamera( 10, window.innerWidth / window.innerHeight, 0.1, 5000 );
+
+	var currentScene = new THREE.Scene();
+	currentScene.background = new THREE.Color( 0x454545 );
+
+    // axes for all
+    var axesHelper = new THREE.AxesHelper( 10 );
+    scene.add( axesHelper );
+
+	// Lights
+
+	var ambientLight = new THREE.AmbientLight( 0x444444 );
+	currentScene.add( ambientLight );
+	scene.add( ambientLight );
+
+    var light = new THREE.HemisphereLight( 0xffffbb, 0x080820, 1 );
+    scene.add( light );
+
+	var light1 = new THREE.DirectionalLight( 0xffffff, 0.5 );
+	light1.position.set( 1, 1, 1 );
+	currentScene.add( light1 );
+	scene.add( light1 );
+
+	var light2 = new THREE.DirectionalLight( 0xffffff, 1.5 );
+	light2.position.set( -0.5, 1, 0.2 );
+	currentScene.add( light2 );
+	scene.add( light2 );
+
+    // Particle sources
+    let source_file_array = [];
+    let source_json = "examples/water-phantom/source.json";
+
+    source_file_array.push(source_json);
+
+    // create three.js representations of all particle source objects
+    let source_group = new THREE.Group();
+    currentScene.add(source_group);
+
+    // add outlines for source objects
+    var outlineMeshArray = [];
+
+    // outline color
+	scene.userData.outlineColor = new THREE.Color( 0xFF00FF );
+
+    let particle_sources = make_sources(source_group, source_file_array, outlineMeshArray);
+
+    console.log(outlineMeshArray);
+
+    //
+
+    // create three.js representations of all materials
+
+    let shape_file_array = [];
+    let phantom     = "examples/water-phantom/phantom.json";
+    let vacuum      = "examples/water-phantom/vacuum.json";
+
+    shape_file_array.push(phantom);
+    shape_file_array.push(vacuum);
+
+    let shape_group = new THREE.Group();
+    let vacuum_group = new THREE.Group();
+
+    currentScene.add(shape_group);
+    currentScene.add(vacuum_group);
+
+    let media = make_shapes(shape_group, vacuum_group, shape_file_array);
+
+    // TODO fix for given shape size
+	scene.userData.camera.position.set(100, 60, 50);
+
+	// Compose rendering
+
+	composer.passes = [];
+
+	composer.addPass( new THREE.RenderPass( currentScene, scene.userData.camera ) );
 
 	var rayPass = new THREE.RenderPass( scene, scene.userData.camera );
 	rayPass.clear = false;
