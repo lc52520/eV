@@ -99,6 +99,24 @@ function createGUI() {
 
 	sourceFolder.open();
 
+    // material parameters
+    var shapeFolder = gui.addFolder( "Materials" )
+
+    // visibility
+    scene.userData.vacuumVisible = true;
+	shapeFolder.add( scene.userData, "vacuumVisible" ).name( "Show vacuum outlines" );
+
+	shapeFolder.open();
+
+    // Miscellaneous options
+    var miscFolder = gui.addFolder( "General" )
+
+    // visibility
+    scene.userData.axesVisible = true;
+	miscFolder.add( scene.userData, "axesVisible" ).name( "Show axes" );
+
+	miscFolder.open();
+
 ////////////////////////////////////////////////////////////////////////////////
 
 	//var sceneFolder = gui.addFolder( "Scene" );
@@ -240,29 +258,36 @@ function createPlasmaBallScene() {
 	var ballScene = new THREE.Scene();
 	ballScene.background = new THREE.Color( 0x454545 );
 
+    // axes for all
+    var axesHelper = new THREE.AxesHelper( 10 );
+    scene.add( axesHelper );
+
 	// Lights
 
 	var ambientLight = new THREE.AmbientLight( 0x444444 );
 	ballScene.add( ambientLight );
 	scene.add( ambientLight );
 
-	//var light1 = new THREE.DirectionalLight( 0xffffff, 0.5 );
-	//light1.position.set( 1, 1, 1 );
-	//ballScene.add( light1 );
-	//scene.add( light1 );
+    var light = new THREE.HemisphereLight( 0xffffbb, 0x080820, 1 );
+    scene.add( light );
 
-	//var light2 = new THREE.DirectionalLight( 0xffffff, 1.5 );
-	//light2.position.set( -0.5, 1, 0.2 );
-	//ballScene.add( light2 );
-	//scene.add( light2 );
+	var light1 = new THREE.DirectionalLight( 0xffffff, 0.5 );
+	light1.position.set( 1, 1, 1 );
+	ballScene.add( light1 );
+	scene.add( light1 );
+
+	var light2 = new THREE.DirectionalLight( 0xffffff, 1.5 );
+	light2.position.set( -0.5, 1, 0.2 );
+	ballScene.add( light2 );
+	scene.add( light2 );
 
     // Particle sources
     let source_file_array = [];
     let source_json = "examples/tantalum-plate/source.json";
-    let source2 =     "examples/tantalum-plate/shifted.json";
+    //let source2 =     "examples/tantalum-plate/shifted.json";
+    //source_file_array.push(source2);
 
     source_file_array.push(source_json);
-    source_file_array.push(source2);
 
     // create three.js representations of all particle source objects
     let source_group = new THREE.Group();
@@ -284,13 +309,20 @@ function createPlasmaBallScene() {
 
     let shape_file_array = [];
     let tantalum_box = "examples/tantalum-plate/plate.json";
+    let vacuumA     = "examples/tantalum-plate/vacuumA.json";
+    let vacuumB     = "examples/tantalum-plate/vacuumB.json";
 
     shape_file_array.push(tantalum_box);
+    shape_file_array.push(vacuumA);
+    shape_file_array.push(vacuumB);
 
     let shape_group = new THREE.Group();
-    ballScene.add(shape_group);
+    let vacuum_group = new THREE.Group();
 
-    let media = make_shapes(shape_group, shape_file_array);
+    ballScene.add(shape_group);
+    ballScene.add(vacuum_group);
+
+    let media = make_shapes(shape_group, vacuum_group, shape_file_array);
 
     // TODO check if there's some race condition here because of async IO
     //console.log("printing all particle sources");
@@ -441,8 +473,16 @@ function createPlasmaBallScene() {
 
 	scene.userData.render = function ( time ) {
 
+        // check for toggling axes
+        axesHelper.visible = scene.userData.axesVisible;
+
         // check if we want sources visible
         source_group.visible = scene.userData.sourcesVisible;
+
+        // check if we want vacuum outlines visible
+        vacuum_group.visible = scene.userData.vacuumVisible;
+
+
 
 		//rayDirection.subVectors( lightningStrike.rayParameters.destOffset, lightningStrike.rayParameters.sourceOffset );
 		//rayLength = rayDirection.length();

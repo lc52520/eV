@@ -77,6 +77,7 @@ function make_source_shape(source_shape, outlineMeshArray) {
 
         default:
             console.log("unsupported source shape type: " + source_shape["type"]);
+            return;
     }
 
     outlineMeshArray.push(shape);
