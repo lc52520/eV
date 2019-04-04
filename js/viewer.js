@@ -136,6 +136,7 @@ function createGUI() {
 	trackFolder.add( scene.userData, "tracksVisible" ).name( "Show particle tracks" );
     scene.userData.loop = false;
     scene.userData.loop_toggle = function() {
+        currentStep = 0;
         scene.userData.loop = !scene.userData.loop;
     }
 	trackFolder.add( scene.userData, "loop_toggle" ).name( "Loop particle tracks" );
@@ -147,7 +148,7 @@ function createGUI() {
         console.log("reset tracks");
     }
 
-	trackFolder.add( scene.userData, "resetTracksFn" ).name( "Reset particle tracks?" );
+	trackFolder.add( scene.userData, "resetTracksFn" ).name( "Reset particle tracks" );
 
 ////////////////////////////////////////////////////////////////////////////////
 

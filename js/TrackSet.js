@@ -67,18 +67,22 @@ TrackSet.prototype.add = function (track_verts, charge) {
 
 TrackSet.prototype.update = function (scene, timeStep) {
 
-    // get rid of old scene
-    scene.remove(this.group);
-
     // scale the timestep so we can see
     var track_step = Math.floor(timeStep / 30) % (this.max_length / 3);
 
-    var last_index = (track_step + 1) * 3;
+    var first_index = track_step * 3;
+    var last_index = first_index + 6;
+
+    // get rid of old scene if we're restarting
+    if (first_index === 0) {
+        scene.remove(this.group);
+        this.group = new THREE.Group();
+        scene.add(this.group);
+    }
 
     console.log(track_step);
-    console.log(last_index);
-
-    this.group = new THREE.Group();
+    console.log("first " + first_index);
+    console.log("last " + last_index);
 
     // go over all tracks and try and draw them
     for (var i = 0; i < this.master_track_array.length; i++) {
@@ -88,14 +92,14 @@ TrackSet.prototype.update = function (scene, timeStep) {
         if (last_index >= currTrack.length) {
             this.group.add(makeTrackMesh(currTrack, this.charge_array[i]));
         } else {
-            this.group.add(makeTrackMesh(currTrack.slice(0,last_index), this.charge_array[i]));
+            this.group.add(makeTrackMesh(currTrack.slice(first_index,last_index), this.charge_array[i]));
         }
     }
 
 
 
     // refresh with new scene
-    scene.add(this.group);
+    //scene.add(this.group);
 }
 
 TrackSet.prototype.reset = function (scene) {
