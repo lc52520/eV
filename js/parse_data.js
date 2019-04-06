@@ -19,5 +19,5 @@ async function parse_simulation_data(scene_group, object_json_file, data_cstor, 
 
     fetch(object_json_file)
         .then(response => response.json()) // parse string to json
-        .then(json => data_cstor(scene_group, json, extra_shape_data)); // add source to source_group
+        .then(json => data_cstor(scene_group, json, extra_shape_data));
 }

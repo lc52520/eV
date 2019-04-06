@@ -2,6 +2,9 @@
 //
 // mxo 2019
 
+// global material array for memoized material colours
+let material_array = {};
+
 // go over file names and try and make Source objects from them
 function make_shapes(scene_group, vacuum_group, shape_files) {
 
@@ -33,7 +36,7 @@ function Shape(scene_group, raw_shape, vacuum_group) {
 
             origin = get_shape_origin(raw_shape);
             shape.position.set(origin.x, origin.y, origin.z);
-            break; // looks weird but if return is ever taken out we'll be safe
+            break;
 
         case "cylinder":
             var shape_data = make_cylinder(raw_shape);
@@ -147,20 +150,25 @@ function make_cylinder(raw_shape) {
 }
 
 
-// memoized material lookup, can change in the GUI
+// material lookup, goal was to change in the GUI
 function match_material(medium_name) {
+
 
     let material;
 
     switch (medium_name) {
         case "tantalum":
-            //material = new THREE.MeshBasicMaterial( {color: 0x78FF78} );
-            material = new THREE.MeshBasicMaterial( {color: 0x222222} );
+            //material = new THREE.MeshBasicMaterial( {color: 0x222222} );
+            material = add_material_color_to_gui({color: 0x222222}, "Tantalum");
+
+            // couldn't get metal lighting working... always was solid black
+            // -- I thought it was a lighting issue but adding lights didn't seem to change the colour
             //material = new THREE.MeshPhysicalMaterial( {color: 0x78FF78, roughness: 0.5, metalness: 1, lights: true} );
             break;
 
         case "water":
             material = new THREE.MeshBasicMaterial( {color: 0x00DCFF, transparent: true, opacity: 0.3} );
+            add_material_color_to_gui(material, "Water");
             break;
 
         default:
@@ -170,4 +178,35 @@ function match_material(medium_name) {
     }
 
     return material;
+}
+
+
+// uses the global gui object to add the material colours as they are required
+function add_material_color_to_gui (material_color, material_name) {
+
+    // if the material is already loaded, return it
+    if (material_array.hasOwnProperty(material_name)) {
+        return material_array[material_name];
+    }
+
+    // otherwise, make a new material and add it to the gui
+
+    let color_str = material_name + "ColorRGB";
+
+    // add the material to the array
+    let material = new THREE.MeshBasicMaterial(material_color);
+
+    material_array[material_name] = material;
+
+    scene.userData[color_str] = [
+        material.color.r * 255,
+        material.color.g * 255,
+        material.color.b * 255
+    ];
+
+    material_gui.addColor( scene.userData, color_str ).name( material_name + ' color' ).onChange( function ( value ) {
+        material.color.setRGB( value[ 0 ], value[ 1 ], value[ 2 ] ).multiplyScalar( 1 / 255 );
+    } );
+
+    return material_array[material_name];
 }
