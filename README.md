@@ -7,9 +7,10 @@ Use eV to view:
 - Particle sources
 - Dose distributions
 - Particle paths  
+
 -------------------
 
-Input files:
+Planned input files:
 - `.egsinp`
 - `.egsdat`
 - `.ptracks`
