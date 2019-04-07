@@ -30,13 +30,6 @@ var sceneCreators = [
     createWaterPhantomScene,
 ];
 
-var textureLoader;
-
-var clock = new THREE.Clock();
-
-var raycaster = new THREE.Raycaster();
-var mouse = new THREE.Vector2();
-
 init();
 animate();
 
@@ -60,14 +53,13 @@ function init() {
 
 	window.addEventListener( 'resize', onWindowResize, false );
 
-	textureLoader = new THREE.TextureLoader();
-
 	createScene();
 
 }
 
 function createScene() {
 
+    // TODO pass in data folder as parameter here
 	scene = sceneCreators[ currentSceneIndex ]();
 
 	createGUI();
@@ -99,6 +91,7 @@ function createGUI() {
 
 	scene.userData.sceneIndex = currentSceneIndex;
 
+    // TODO generalize the sceneIndex for a arbitrary number of scenes
 	sceneFolder.add( scene.userData, 'sceneIndex', { "Tantalum plate": 0, "Water phantom": 1} ).name( 'Model' ).onChange( function ( value ) {
 		currentSceneIndex = value;
 		createScene();
@@ -169,8 +162,6 @@ function animate() {
 
 function render() {
 
-	//currentTime += scene.userData.timeRate * clock.getDelta();
-
     currentStep += 1;
 
 	if ( currentStep < 0 ) {
@@ -182,25 +173,6 @@ function render() {
 	scene.userData.render( currentStep );
 
 }
-
-// taken from LightningStrike example to render seperate scenes
-function createOutline( scene, objectsArray, visibleColor ) {
-
-	var outlinePass = new THREE.OutlinePass( new THREE.Vector2( window.innerWidth, window.innerHeight ), scene, scene.userData.camera, objectsArray );
-	outlinePass.edgeStrength = 2.5;
-	outlinePass.edgeGlow = 0.7;
-	outlinePass.edgeThickness = 2.8;
-	outlinePass.visibleEdgeColor = visibleColor;
-	outlinePass.hiddenEdgeColor.set( 0 );
-	composer.addPass( outlinePass );
-
-	scene.userData.outlineEnabled = true;
-
-	return outlinePass;
-
-}
-
-//
 
 function createPlateScene() {
 
@@ -219,20 +191,6 @@ function createPlateScene() {
 
 	var ambientLight = new THREE.AmbientLight( 0x444444 );
 	plateScene.add( ambientLight );
-	scene.add( ambientLight );
-
-    var light = new THREE.HemisphereLight( 0xffffbb, 0x080820, 1 );
-    scene.add( light );
-
-	var light1 = new THREE.DirectionalLight( 0xffffff, 0.5 );
-	light1.position.set( 1, 1, 1 );
-	plateScene.add( light1 );
-	scene.add( light1 );
-
-	var light2 = new THREE.DirectionalLight( 0xffffff, 1.5 );
-	light2.position.set( -0.5, 1, 0.2 );
-	plateScene.add( light2 );
-	scene.add( light2 );
 
     // Particle sources
     let source_file_array = [];
@@ -243,12 +201,6 @@ function createPlateScene() {
     // create three.js representations of all particle source objects
     let source_group = new THREE.Group();
     plateScene.add(source_group);
-
-    // add outlines for source objects
-    var outlineMeshArray = [];
-
-    // outline color
-	scene.userData.outlineColor = new THREE.Color( 0xFF00FF );
 
     let particle_sources = make_sources(source_group, source_file_array);
 
@@ -298,12 +250,6 @@ function createPlateScene() {
 
 	composer.addPass( new THREE.RenderPass( plateScene, scene.userData.camera ) );
 
-	var rayPass = new THREE.RenderPass( scene, scene.userData.camera );
-	rayPass.clear = false;
-	composer.addPass( rayPass );
-
-	var outlinePass = createOutline( scene, outlineMeshArray, scene.userData.outlineColor );
-
 	scene.userData.render = function ( time ) {
 
         // check for toggling axes
@@ -334,8 +280,6 @@ function createPlateScene() {
 
 		controls.update();
 
-		outlinePass.enabled = true;
-
 		composer.render();
 
 	};
@@ -364,20 +308,6 @@ function createWaterPhantomScene() {
 
 	var ambientLight = new THREE.AmbientLight( 0x444444 );
 	currentScene.add( ambientLight );
-	scene.add( ambientLight );
-
-    var light = new THREE.HemisphereLight( 0xffffbb, 0x080820, 1 );
-    scene.add( light );
-
-	var light1 = new THREE.DirectionalLight( 0xffffff, 0.5 );
-	light1.position.set( 1, 1, 1 );
-	currentScene.add( light1 );
-	scene.add( light1 );
-
-	var light2 = new THREE.DirectionalLight( 0xffffff, 1.5 );
-	light2.position.set( -0.5, 1, 0.2 );
-	currentScene.add( light2 );
-	scene.add( light2 );
 
     // Particle sources
     let source_file_array = [];
@@ -389,17 +319,7 @@ function createWaterPhantomScene() {
     let source_group = new THREE.Group();
     currentScene.add(source_group);
 
-    // add outlines for source objects
-    var outlineMeshArray = [];
-
-    // outline color
-	scene.userData.outlineColor = new THREE.Color( 0xFF00FF );
-
-    let particle_sources = make_sources(source_group, source_file_array, outlineMeshArray);
-
-    //console.log(outlineMeshArray);
-
-    //
+    let particle_sources = make_sources(source_group, source_file_array);
 
     // create three.js representations of all materials
 
@@ -427,11 +347,8 @@ function createWaterPhantomScene() {
 
 	composer.addPass( new THREE.RenderPass( currentScene, scene.userData.camera ) );
 
-	var rayPass = new THREE.RenderPass( scene, scene.userData.camera );
-	rayPass.clear = false;
-	composer.addPass( rayPass );
-
-	var outlinePass = createOutline( scene, outlineMeshArray, scene.userData.outlineColor );
+    // need a better solution than multiple render calls ... they're essentially the same call
+    // for each scene -> maybe in a higher-order function for particle scenes
 
 	scene.userData.render = function ( time ) {
 
@@ -446,8 +363,6 @@ function createWaterPhantomScene() {
 
 		controls.update();
 
-		outlinePass.enabled = true;
-
 		composer.render();
 
 	};
@@ -458,3 +373,4 @@ function createWaterPhantomScene() {
 
 	return scene;
 }
+
