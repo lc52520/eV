@@ -168,12 +168,14 @@ function match_material(medium_name) {
 
         case "water":
             material = new THREE.MeshBasicMaterial( {color: 0x00DCFF, transparent: true, opacity: 0.3} );
+            //add_material_color_to_gui({color: 0x00DCFF, transparent: true, opacity: 0.3}, "Water");
             add_material_color_to_gui(material, "Water");
             break;
 
         default:
             console.log("unknown material: " + medium_name + " ; using default material");
             material = new THREE.MeshBasicMaterial( {color: 0xcccccc} );
+            add_material_color_to_gui(material, "Water");
 
     }
 
@@ -198,6 +200,9 @@ function add_material_color_to_gui (material_color, material_name) {
 
     material_array[material_name] = material;
 
+    // NOTE: using global scene and gui parameters here
+    // --> idea was to avoid pass-through parameters in favour of direct
+    // asynchronous access to the scene
     scene.userData[color_str] = [
         material.color.r * 255,
         material.color.g * 255,
