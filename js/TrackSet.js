@@ -1,7 +1,28 @@
 // particle track set object, can be queried for particle track
 // updates
 
-// based off of the THREE.LightningStrike object by @author yomboprime
+// When I was writing this, I first tried to base it off of the
+// THREE.LightningStrike object by @author yomboprime
+//
+// As it turned out, the two objects have less in common than I thought,
+// because the lighting strike parameters are made recursively (rays to subrays, etc).
+// and using a random number generator.
+//
+// Instead, particle tracks follow set paths and (usually -- except for pair production)
+// don't split recursively like lightning rays.
+//
+// Anyways, the update method is the only one that has anything in common with LightningStrike
+
+
+// a TrackSet takes a collection of vertices and will draw them
+TrackSet = function ( track_group ) {
+    this.master_group = track_group;
+    this.group = track_group;
+    this.charge_array       = [];
+    this.master_track_array = [];
+    this.curr_track_array   = [];
+    this.max_length = 0;
+};
 
 async function parse_track_file(file, track_set) {
 
@@ -13,15 +34,6 @@ async function parse_track_file(file, track_set) {
 function make_track_sets(track_data, track_set) {
 
     for (var i = 0; i < track_data.length; i++) {
-
-        //console.log(track_data[i].tracks);
-
-        //var geometry = new THREE.BufferGeometry();
-        //geometry.addAttribute( 'position', new THREE.Float32BufferAttribute( track_data[i].tracks, 3 ) );
-        ////geometry.computeBoundingSphere();
-
-        //var material = new THREE.LineBasicMaterial({ color: get_particle_colour(track_data[i].charge) });
-        //var mesh = new THREE.Line( geometry, material );
 
         var mesh = makeTrackMesh(track_data[i].tracks, track_data[i].charge);
 
@@ -40,15 +52,6 @@ function makeTrackMesh(vertices, charge) {
 }
 
 
-TrackSet = function ( track_group ) {
-    this.master_group = track_group;
-    this.group = track_group;
-    this.charge_array       = [];
-    this.master_track_array = [];
-    this.curr_track_array   = [];
-    this.max_length = 0;
-};
-
 TrackSet.prototype.add = function (track_verts, charge) {
 
     // full set of tracks
@@ -65,6 +68,8 @@ TrackSet.prototype.add = function (track_verts, charge) {
     console.log(this.max_length);
 }
 
+// This method is very slow -> will have to move to a geometry shader in between
+// vertex and fragment shader stages to speed it up
 TrackSet.prototype.update = function (scene, timeStep) {
 
     // scale the timestep so we can see
@@ -73,16 +78,17 @@ TrackSet.prototype.update = function (scene, timeStep) {
     var first_index = track_step * 3;
     var last_index = first_index + 6;
 
-    // get rid of old scene if we're restarting
+    // get rid of old group if we're restarting
     if (first_index === 0) {
         scene.remove(this.group);
         this.group = new THREE.Group();
         scene.add(this.group);
     }
 
-    console.log(track_step);
-    console.log("first " + first_index);
-    console.log("last " + last_index);
+    // debug
+    //console.log(track_step);
+    //console.log("first " + first_index);
+    //console.log("last " + last_index);
 
     // go over all tracks and try and draw them
     for (var i = 0; i < this.master_track_array.length; i++) {
@@ -95,11 +101,6 @@ TrackSet.prototype.update = function (scene, timeStep) {
             this.group.add(makeTrackMesh(currTrack.slice(first_index,last_index), this.charge_array[i]));
         }
     }
-
-
-
-    // refresh with new scene
-    //scene.add(this.group);
 }
 
 TrackSet.prototype.reset = function (scene) {

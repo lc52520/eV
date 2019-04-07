@@ -26,7 +26,7 @@ var currentSceneIndex = 0;
 var currentStep = 0;
 
 var sceneCreators = [
-	createPlasmaBallScene,
+	createPlateScene,
     createWaterPhantomScene,
 ];
 
@@ -202,17 +202,14 @@ function createOutline( scene, objectsArray, visibleColor ) {
 
 //
 
-function createPlasmaBallScene() {
+function createPlateScene() {
 
 	var scene = new THREE.Scene();
 
-	scene.userData.canGoBackwardsInTime = true;
-
-	//scene.userData.camera = new THREE.PerspectiveCamera( 27, window.innerWidth / window.innerHeight, 100, 50000 );
 	scene.userData.camera = new THREE.PerspectiveCamera( 10, window.innerWidth / window.innerHeight, 0.1, 5000 );
 
-	var ballScene = new THREE.Scene();
-	ballScene.background = new THREE.Color( 0x454545 );
+	var plateScene = new THREE.Scene();
+	plateScene.background = new THREE.Color( 0x454545 );
 
     // axes for all
     var axesHelper = new THREE.AxesHelper( 10 );
@@ -221,7 +218,7 @@ function createPlasmaBallScene() {
 	// Lights
 
 	var ambientLight = new THREE.AmbientLight( 0x444444 );
-	ballScene.add( ambientLight );
+	plateScene.add( ambientLight );
 	scene.add( ambientLight );
 
     var light = new THREE.HemisphereLight( 0xffffbb, 0x080820, 1 );
@@ -229,12 +226,12 @@ function createPlasmaBallScene() {
 
 	var light1 = new THREE.DirectionalLight( 0xffffff, 0.5 );
 	light1.position.set( 1, 1, 1 );
-	ballScene.add( light1 );
+	plateScene.add( light1 );
 	scene.add( light1 );
 
 	var light2 = new THREE.DirectionalLight( 0xffffff, 1.5 );
 	light2.position.set( -0.5, 1, 0.2 );
-	ballScene.add( light2 );
+	plateScene.add( light2 );
 	scene.add( light2 );
 
     // Particle sources
@@ -245,7 +242,7 @@ function createPlasmaBallScene() {
 
     // create three.js representations of all particle source objects
     let source_group = new THREE.Group();
-    ballScene.add(source_group);
+    plateScene.add(source_group);
 
     // add outlines for source objects
     var outlineMeshArray = [];
@@ -257,20 +254,19 @@ function createPlasmaBallScene() {
 
     console.log(outlineMeshArray);
 
-    //
-
     // create three.js representations of all materials
 
     let shape_file_array = [];
     let tantalum_box = "examples/tantalum-plate/plate.json";
-    let tantalum_box2 = "examples/tantalum-plate/plate2.json";
-   // let water_cyl =    "examples/water-phantom/phantom.json";
+
+    // uncomment to render another plate
+    // let tantalum_box2 = "examples/tantalum-plate/plate2.json";
+    //shape_file_array.push(tantalum_box2);
 
     let vacuumA     = "examples/tantalum-plate/vacuumA.json";
     let vacuumB     = "examples/tantalum-plate/vacuumB.json";
 
     shape_file_array.push(tantalum_box);
-    shape_file_array.push(tantalum_box2);
 
     shape_file_array.push(vacuumA);
     shape_file_array.push(vacuumB);
@@ -278,8 +274,8 @@ function createPlasmaBallScene() {
     let shape_group = new THREE.Group();
     let vacuum_group = new THREE.Group();
 
-    ballScene.add(shape_group);
-    ballScene.add(vacuum_group);
+    plateScene.add(shape_group);
+    plateScene.add(vacuum_group);
 
     let media = make_shapes(shape_group, vacuum_group, shape_file_array);
 
@@ -290,7 +286,7 @@ function createPlasmaBallScene() {
     let track_group = new THREE.Group();
     let tracks = new TrackSet(track_group);
 
-    ballScene.add(tracks.group);
+    plateScene.add(tracks.group);
 
     parse_track_file(track_file, tracks);
 
@@ -302,7 +298,7 @@ function createPlasmaBallScene() {
 
 	composer.passes = [];
 
-	composer.addPass( new THREE.RenderPass( ballScene, scene.userData.camera ) );
+	composer.addPass( new THREE.RenderPass( plateScene, scene.userData.camera ) );
 
 	var rayPass = new THREE.RenderPass( scene, scene.userData.camera );
 	rayPass.clear = false;
@@ -326,7 +322,7 @@ function createPlasmaBallScene() {
         if (scene.userData.resetTracks) {
 
             //console.log("showing all tracks");
-            tracks.reset(ballScene);
+            tracks.reset(plateScene);
             // reset the flag
             scene.userData.resetTracks = false;
             scene.userData.loop = false;
@@ -335,7 +331,7 @@ function createPlasmaBallScene() {
             currentStep = 0;
 
         } else if(scene.userData.loop) {
-            tracks.update(ballScene, time);
+            tracks.update(plateScene, time);
         }
 
 		controls.update();
