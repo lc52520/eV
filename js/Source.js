@@ -3,17 +3,16 @@
 // mxo, March 2019
 
 // go over file names and try and make Source objects from them
-function make_sources(source_group, source_files, outlineMeshArray) {
+function make_sources(source_group, source_files) {
 
-    make_scene_objects(source_group, source_files, Source, outlineMeshArray);
+    make_scene_objects(source_group, source_files, Source);
 }
 
 // given a three.js group and a raw parsed source object,
 // add the three.js components needed to view it
-function Source(source_group, raw_source, outlineMeshArray) {
+function Source(source_group, raw_source) {
 
-    console.log(raw_source);
-
+    //console.log(raw_source);
 
     // check for the source's charge (must have one)
     if (! raw_source.hasOwnProperty("charge")) {
@@ -41,7 +40,7 @@ function Source(source_group, raw_source, outlineMeshArray) {
     }
 
     // add a solid shape to represent the source
-    source_group.add( make_source_shape(source_shape, particle_colour, outlineMeshArray) );
+    source_group.add( make_source_shape(source_shape, particle_colour) );
 
     // if the particle source has a direction, add a direction helper
     if ( raw_source.hasOwnProperty("direction") ) {
@@ -51,10 +50,10 @@ function Source(source_group, raw_source, outlineMeshArray) {
 
         let origin = get_shape_origin(source_shape);
         source_group.add( make_direction_helper(direction, origin, particle_colour) );
-
-    } else {
-        console.log("no direction property for source: ");
+        return;
     }
+
+    //console.log("no direction property for source: ");
 
     // check if the source is isotropic
     if ( raw_source.hasOwnProperty("type") ) {
@@ -78,14 +77,13 @@ function Source(source_group, raw_source, outlineMeshArray) {
 
         default:
             console.log("unknown source type: " + raw_source["type"]);
-
         }
     }
 }
 
 // make particle source shape
 // Assumes that given shapes have an origin
-function make_source_shape(source_shape, particle_colour, outlineMeshArray) {
+function make_source_shape(source_shape, particle_colour) {
 
     // add to shape cstors as required
     if (! source_shape.hasOwnProperty("type")) {
@@ -106,7 +104,7 @@ function make_source_shape(source_shape, particle_colour, outlineMeshArray) {
             let origin = get_shape_origin(source_shape);
             var geometry = new THREE.SphereGeometry( radius );
             shape = new THREE.Mesh( geometry, material );
-            console.log(get_shape_origin(source_shape));
+            //console.log(get_shape_origin(source_shape));
             shape.position.set(origin.x, origin.y, origin.z);
 
             break;
@@ -115,8 +113,6 @@ function make_source_shape(source_shape, particle_colour, outlineMeshArray) {
             console.log("unsupported source shape type: " + source_shape["type"]);
             return;
     }
-
-    outlineMeshArray.push(shape);
 
     return shape;
 }

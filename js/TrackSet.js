@@ -65,7 +65,7 @@ TrackSet.prototype.add = function (track_verts, charge) {
 
     if (track_verts.length > this.max_length) { this.max_length = track_verts.length; }
 
-    console.log(this.max_length);
+    console.log("maximum track vertex array length: " + this.max_length);
 }
 
 // This method is very slow -> will have to move to a geometry shader in between

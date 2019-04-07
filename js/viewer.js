@@ -250,9 +250,7 @@ function createPlateScene() {
     // outline color
 	scene.userData.outlineColor = new THREE.Color( 0xFF00FF );
 
-    let particle_sources = make_sources(source_group, source_file_array, outlineMeshArray);
-
-    console.log(outlineMeshArray);
+    let particle_sources = make_sources(source_group, source_file_array);
 
     // create three.js representations of all materials
 
@@ -399,7 +397,7 @@ function createWaterPhantomScene() {
 
     let particle_sources = make_sources(source_group, source_file_array, outlineMeshArray);
 
-    console.log(outlineMeshArray);
+    //console.log(outlineMeshArray);
 
     //
 

@@ -15,7 +15,7 @@ function make_shapes(scene_group, vacuum_group, shape_files) {
 // add the three.js components needed to view it
 function Shape(scene_group, raw_shape, vacuum_group) {
 
-    console.log(raw_shape);
+    //console.log(raw_shape);
 
     if (! raw_shape.hasOwnProperty("type")) {
         console.log("no type property for medium: ");
@@ -170,6 +170,10 @@ function match_material(medium_name) {
             material = new THREE.MeshBasicMaterial( {color: 0x00DCFF, transparent: true, opacity: 0.3} );
             //add_material_color_to_gui({color: 0x00DCFF, transparent: true, opacity: 0.3}, "Water");
             add_material_color_to_gui(material, "Water");
+            break;
+
+        case "vacuum":
+            // do nothing (vacuum material is made by the caller)
             break;
 
         default:
