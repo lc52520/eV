@@ -63,18 +63,19 @@ function Source(source_group, raw_source, outlineMeshArray) {
         case "point_source":
             let origin = get_shape_origin(source_shape);
             let dir_helpers = [];
-            dir_helpers.push(new THREE.Vector3(1,0,0));
-            dir_helpers.push(new THREE.Vector3(-1,0,0));
-            dir_helpers.push(new THREE.Vector3(0,1,0));
-            dir_helpers.push(new THREE.Vector3(0,-1,0));
-            dir_helpers.push(new THREE.Vector3(0,0,1));
-            dir_helpers.push(new THREE.Vector3(0,0,-1));
+            dir_helpers.push(new THREE.Vector3(1,0,0),
+                             new THREE.Vector3(-1,0,0),
+                             new THREE.Vector3(0,1,0),
+                             new THREE.Vector3(0,-1,0),
+                             new THREE.Vector3(0,0,1),
+                             new THREE.Vector3(0,0,-1));
 
             for (let i = 0; i < dir_helpers.length; i++) {
                 source_group.add(make_direction_helper(dir_helpers[i], origin));
             }
 
             break;
+
         default:
             console.log("unknown source type: " + raw_source["type"]);
 
@@ -150,6 +151,7 @@ function get_particle_colour(charge_number) {
         case -1:
             colour = 0x9afeff;
             break;
+        // photons
         case 0:
             colour = 0xffff00;
             break;
